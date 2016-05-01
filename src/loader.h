@@ -71,6 +71,7 @@ unsigned int(*OSScreenGetBufferSizeEx)(unsigned int bufferNum);
 unsigned int(*OSScreenSetBufferEx)(unsigned int bufferNum, void * addr);
 int(*VPADRead)(int controller, VPADData *buffer, unsigned int num, int *error);
 int64_t (*OSGetTime)();
+void*(*memset)(void * dest, uint32_t value, uint32_t bytes);
 
 
 /* Alloc */

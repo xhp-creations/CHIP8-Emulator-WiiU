@@ -82,6 +82,7 @@ void _main()
 	OSDynLoad_FindExport(coreinit_handle, 0, "OSScreenGetBufferSizeEx", &OSScreenGetBufferSizeEx);
 	OSDynLoad_FindExport(coreinit_handle, 0, "OSScreenSetBufferEx", &OSScreenSetBufferEx);
 	OSDynLoad_FindExport(coreinit_handle, 0, "OSGetTime", &OSGetTime);   
+	OSDynLoad_FindExport(coreinit_handle, 0, "memset", &memset);
 
 	//Export memory allocation function
 	unsigned int *functionPointer = 0;
@@ -177,29 +178,22 @@ void CHIP8_initialize() {
 	I      = 0;      // Reset index register
 	sp     = 0;      // Reset stack pointer
 	
-	// Clear display
-	for(li = 0; li < 2048; li++)
-		gfx[li] = 0;
-
-	// Clear stack
-	for(li = 0; li < 16; li++)
-		cstack[li] = 0;
-
-	for(li = 0; li < 17; li++)
-		key[li] = V[li] = 0;
-
-	// Clear memory
-	for(li = 0; li < 4096; li++)
-		memory[li] = 0;
 	
+	// Clear display
+	memset(gfx,0,2048);
+	// Clear stack
+	memset(cstack,0,16);
+	//Reset keys
+	memset(key,0,17);
+	// Clear memory
+	memset(memory,0,4096);	
+	//TODO: Switch to memcpy()
 	//Load rom into memory
 	for(li = 0; li < 2048; li++)
 		memory[li + 512] = crom[li];
-	
 	// Load fontset
 	for(li = 0; li < 80; li++)
 		memory[li] = chip8_fontset[li];		
-	
 	// Reset timers
 	delay_timer = 0;
 	sound_timer = 0;
@@ -215,14 +209,13 @@ void CHIP8_emulateCycle() {
 			switch(opcode & 0x000F)
 			{
 				case 0x0000:
-					for(lg = 0; lg < 2048; lg++)
-						gfx[lg] = 0x0;
+					memset(gfx,0,2048);
 					CHIP8_drawFlag = true;
 					pc += 2;
 				break;
 
 				case 0x000E:
-					--sp;
+					sp--;
 					pc = cstack[sp];
 					pc += 2;
 				break;
@@ -238,7 +231,7 @@ void CHIP8_emulateCycle() {
 
 		case 0x2000:
 			cstack[sp] = pc;
-			++sp;
+			sp++;
 			pc = opcode & 0x0FFF;
 		break;
 		
