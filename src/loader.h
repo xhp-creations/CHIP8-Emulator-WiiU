@@ -32,6 +32,7 @@ void emu_settings_kconf_render();
 int set_kconf_key(char* key_to_change);
 void set_kconf_key_render(char* key_to_change);
 char* emu_settings_getkey(int hexval);
+void error_handler(char * errorString);
 
 
 char kb_text[256];
