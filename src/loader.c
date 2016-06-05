@@ -106,7 +106,7 @@ void _main()
 		fname[k] = kb_text[k];
 
 	int ret = OSCreateThread(thread, _mainThread, 0, (void*) 0, (uint32_t)stack + 0x1800, 0x1800, 0, 0x1A); //Create the curl thread
-	if (!ret) OSFatal("Failed to create thread");
+	if (!ret) error_handler("Failed to create thread");
 
 	OSResumeThread(thread); //Schedule curl thread for execution
 	while(!OSIsThreadTerminated(thread)) ; //Keep this thread alive to do actual emulation
@@ -136,7 +136,7 @@ void _mainThread(int argc, void *argv) {
 			leaddr = (char*)0;
 		}
 	}
-	if(leaddr == (char*)0) OSFatal("Unable to find usable URL");
+	if(leaddr == (char*)0) error_handler("Unable to find usable URL");
 	/* Generate the boot.elf address */
 	memcopy(url, leaddr, 64);
 	char *ptr = url;
@@ -151,7 +151,7 @@ void _mainThread(int argc, void *argv) {
 	curl_global_init(CURL_GLOBAL_ALL); 
 
 	void *curl_handle = curl_easy_init();
-	if(!curl_handle) OSFatal("cURL not initialized");
+	if(!curl_handle) error_handler("cURL not initialized");
 	curl_download_file(curl_handle, url);
 	curl_easy_cleanup(curl_handle);
 }
@@ -166,10 +166,10 @@ static int curl_download_file(void *curl, char *url) {
 	curl_easy_setopt(curl, CURLOPT_URL, url); //Setup parameters for file
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_data_callback);
 	int ret = curl_easy_perform(curl); //Actually download the file
-	if (ret) OSFatal("curl_easy_perform returned an error");
+	if (ret) error_handler("curl_easy_perform returned an error");
 	int resp = 404;
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &resp);
-	if(resp != 200) OSFatal("curl_easy_getinfo returned an HTTP error");
+	if(resp != 200) error_handler("curl_easy_getinfo returned an HTTP error");
 }
 //--End of code for rom download--
 void CHIP8_initialize() {
@@ -897,4 +897,28 @@ char* emu_settings_getkey(int hexval) {
 			break;	
 	}
 	return getkey;
+}
+
+void error_handler(char * errorString) {
+    
+    OSScreenClearBufferEx(0, 0xFF0000FF);
+    OSScreenClearBufferEx(1, 0xFF0000FF);
+    
+    OSScreenPutFontEx(0, 0, 0, "Apologies for any incovnenience, but an error has occurred.");
+    OSScreenPutFontEx(1, 0, 0, "Apologies for any incovnenience, but an error has occurred.");
+    
+    OSScreenPutFontEx(0, 0, 1, errorString);
+    OSScreenPutFontEx(1, 0, 1, errorString);
+    
+    OSScreenPutFontEx(0, 0, 3, "Returning to HOME Menu...");
+    OSScreenPutFontEx(1, 0, 3, "Returning to HOME Menu...");
+    
+    OSScreenFlipBuffersEx(0);
+    OSScreenFlipBuffersEx(1);
+    
+    unsigned int t1 = 0x50000000;
+    while(t1--);
+    
+    ExitApplication();
+    
 }
