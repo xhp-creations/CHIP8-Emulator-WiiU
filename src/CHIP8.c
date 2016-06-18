@@ -3,6 +3,7 @@
 char* avaiable_keys[13]={"A","B","X","Y","LEFT","RIGHT","UP","DOWN","ZL","ZR","L","R","MINUS"}; //Avaiable WiiU keys
 int kconf[13]={0x5,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10}; //Default key configuration
 char rom[2048]; //CHIP8 roms shouldn't be more than 2Kb and also, why caring about stability?
+int dbc = 1000; //delay between cycles
 
 void CHIP8_initialize() {
 	pc     = 0x200;  // Program counter starts at 0x200
@@ -72,7 +73,6 @@ void rom_choose_render(char files[16][256], int fnum, int selected) { //Render t
 	OSScreenPutFontEx(1, 20, 0, "==CHIP 8 EMULATOR=="); 
 	OSScreenPutFontEx(1, 1, 1, "--PLEASE SELECT A ROM--");
 	for(int i=0;i<fnum;i++) OSScreenPutFontEx(1, 4, i+2, files[i]); //Print all the roms in files
-
 	OSScreenPutFontEx(1, 1, selected+2, "->"); //Print the cursor
 	rom_choose_render_tv(files, fnum, selected);
 	flipBuffers();	
@@ -96,8 +96,14 @@ void emu_settings() {
 			return;
 		}
 		if (vpad_data.tpdata.touched == 1) {
-			if ((vpad_data.tpdata1.x > 265) && (vpad_data.tpdata1.x < 1766) && (vpad_data.tpdata1.y > 2450) && (vpad_data.tpdata1.y < 2836)) { //Delay between cycles
-				
+			if ((vpad_data.tpdata1.x>1830)&&(vpad_data.tpdata1.x<1935)&&(vpad_data.tpdata1.y>2500)&&(vpad_data.tpdata1.y<2700)) { //+ delay
+				dbc+=100;
+				emu_settings_render();
+				msleep(300); //debounce
+			} else if ((vpad_data.tpdata1.x>2800)&&(vpad_data.tpdata1.x<2900)&&(vpad_data.tpdata1.y>2500)&&(vpad_data.tpdata1.y<2700)) { //- delay
+				if(dbc>0) dbc-=100;
+				emu_settings_render();
+				msleep(300); //debounce
 			} else if ((vpad_data.tpdata1.x>265)&&(vpad_data.tpdata1.x<2175)&&(vpad_data.tpdata1.y>2050)&&(vpad_data.tpdata1.y<2450)) { //Change controller configuration
 				emu_settings_kconf();
 				emu_settings_render();
@@ -110,7 +116,10 @@ void emu_settings_render() {
 	OSScreenClearBufferEx(1, 0x00000001);
 	OSScreenPutFontEx(1, 20, 1, "==CHIP 8 EMULATOR==");
 	OSScreenPutFontEx(1, 1, 3, "--SETTINGS--");
-	OSScreenPutFontEx(1, 1, 5, "(Delay between cycles: )-not implemented yet");
+	char txtb[256];
+	__os_snprintf(txtb, 256, "Delay between cycles (us): + %d", dbc); //Print the delay
+	OSScreenPutFontEx(1, 1, 5, txtb);
+	OSScreenPutFontEx(1, 46, 5, "-");
 	OSScreenPutFontEx(1, 1, 7, "Change controller configuration");
 	OSScreenPutFontEx(1, 1, 9, "Close Settings");
 	emu_settings_render_tv();
@@ -120,7 +129,9 @@ void emu_settings_render_tv() {
 	OSScreenClearBufferEx(0, 0x00000001);
 	OSScreenPutFontEx(0, 20, 1, "==CHIP 8 EMULATOR==");
 	OSScreenPutFontEx(0, 1, 3, "--SETTINGS--");
-	OSScreenPutFontEx(0, 1, 4, "(Delay between cycles: )-not implemented yet!");
+	char txtb[256];
+	__os_snprintf(txtb, 256, "Delay between cycles: %d us", dbc); //Print the delay
+	OSScreenPutFontEx(0, 1, 4, txtb);
 	OSScreenPutFontEx(0, 1, 5, "Current controller configuration:");
 	for(int i=0;i<13;i++) {
 		OSScreenPutFontEx(0, 1, 6+i, avaiable_keys[i]);

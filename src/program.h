@@ -14,6 +14,7 @@
 #include "CHIP8.h"
 
 extern bool CHIP8_drawFlag;
+extern int dbc;
 int _entryPoint();
 void flipBuffers();
 

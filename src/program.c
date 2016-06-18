@@ -47,6 +47,7 @@ int _entryPoint() {
 		CHIP8_emulateCycle(); // Emulate one cycle
 		if(CHIP8_drawFlag) CHIP8_drawGraphics(); // If the draw flag is set, update the screen
 		CHIP8_setKeys(); // Store key press state (Press and Release)	
+		usleep(dbc);
 	}
 	
 exit:
