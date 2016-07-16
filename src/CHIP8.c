@@ -1,6 +1,6 @@
 #include "CHIP8.h"
 
-char* avaiable_keys[13]={"A","B","X","Y","LEFT","RIGHT","UP","DOWN","ZL","ZR","L","R","MINUS"}; //Avaiable WiiU keys
+char* avaiable_keys[13]={"A","B","X","Y","LEFT","RIGHT","UP","DOWN","ZL","ZR","L","R","MINUS"}; //Available WiiU keys
 int kconf[13]={0x5,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10}; //Default key configuration
 char rom[2048]; //CHIP8 roms shouldn't be more than 2Kb and also, why caring about stability?
 int dbc = 1000; //delay between cycles
@@ -28,7 +28,7 @@ void LoadROM() {
 	struct dirent *dirent = NULL; //Struct used for storing current file/dir
 	char roms[16][256]; //Array of roms in /sd/wiiu/apps/CHIP8/roms/
 	int fnum = 0; //Number of roms
-	while ((dirent = vrt_readdir(dir)) != 0 && fnum<16) { //Read al dirs and check that the roms are not more than 16
+	while ((dirent = vrt_readdir(dir)) != 0 && fnum<16) { //Read all dirs and check that the roms are not more than 16
 		if (((dirent->d_type & DT_DIR) == false) && (check_extension(dirent->d_name))) { //Check that the entry is a file and has .c8/.C8 extension
 			__os_snprintf(roms[fnum], 256, "%s", dirent->d_name); //Print the rom name to the roms array
 			fnum++; //Increase files number
