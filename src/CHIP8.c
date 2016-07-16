@@ -29,7 +29,7 @@ void LoadROM() {
 	char roms[16][256]; //Array of roms in /sd/wiiu/apps/CHIP8/roms/
 	int fnum = 0; //Number of roms
 	while ((dirent = vrt_readdir(dir)) != 0 && fnum<16) { //Read al dirs and check that the roms are not more than 16
-		if (check_extension(dirent->d_name)) { //Check that the file has .c8/.C8 extension
+		if (((dirent->d_type & DT_DIR) == false) && (check_extension(dirent->d_name))) { //Check that the entry is a file and has .c8/.C8 extension
 			__os_snprintf(roms[fnum], 256, "%s", dirent->d_name); //Print the rom name to the roms array
 			fnum++; //Increase files number
 		}
