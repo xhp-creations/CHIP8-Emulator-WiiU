@@ -2,17 +2,22 @@
 #define CHIP8CORE_H
 
 #include <stdlib.h>
-#include "program.h"
+#include "main.h"
 #include "CHIP8.h"
 
-extern unsigned char gfx[64 * 32];
-extern int kconf[13];
-extern VPADData vpad_data;
-extern int error;
-extern bool exitpg;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+void drawSprite(unsigned char X, unsigned char Y, unsigned char N);
 void CHIP8_emulateCycle();
-void CHIP8_setKeys();
+void CHIP8_decreaseTimers();
+void CHIP8_setKeys(unsigned int buttonValue);
+
+#ifdef __cplusplus
+}
+#endif
+
 int crand();
 int rand();
 

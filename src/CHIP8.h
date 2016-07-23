@@ -1,11 +1,8 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
-#include "fs/vrt.h"
-#include "fs/virtualpath.h"
-#include "program.h"
+#include "main.h"
 #include "C8core.h"
-#include "C8gfx.h"
 
 #include <errno.h>
 #include <malloc.h>
@@ -17,6 +14,7 @@
 extern unsigned short opcode; //Current opcode
 extern unsigned char memory[4096]; 
 extern unsigned char V[16];
+extern unsigned char hp48_flags[8];
 extern unsigned short I;
 extern unsigned short pc;
 extern unsigned char delay_timer;
@@ -25,21 +23,19 @@ extern unsigned short cstack[16];
 extern unsigned short sp;
 extern unsigned char key[0x11];
 extern unsigned char chip8_fontset[80];
+extern unsigned char bigfont[160];
 extern int li;
+extern unsigned char kconf[16];
+extern int mode;
 
-void CHIP8_initialize();
-void emu_settings();
-void emu_settings_render();
-void emu_settings_render_tv();
-void emu_settings_kconf();
-void emu_settings_kconf_render();
-int set_kconf_key(char* key_to_change);
-void set_kconf_key_render(char* key_to_change);
-char* emu_settings_getkey(int hexval);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void LoadROM();
-bool check_extension(char* str);
-void rom_choose_render(char files[16][256], int fnum, int selected);
-void rom_choose_render_tv(char files[16][256], int fnum, int selected);
+void CHIP8_initialize(unsigned char *newROM, unsigned char *keyConf);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CHIP8_H */
