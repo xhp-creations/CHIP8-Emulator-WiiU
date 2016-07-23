@@ -6,6 +6,8 @@ Originally Ported by rw-r-r_0644 using original emulator from here: http://www.m
 
 rw-r-r_0644 version located here:  https://github.com/rw-r-r-0644/CHIP8-Emulator-WiiU
 
+The code could be trimmed down some, as this was patched together into HBL code and some code may not be needed.
+
 CHIP-8/SCHIP-8 GX2 Emulator by brienj
 
 I updated the CHIP-8 Emulator made by rw-r-r_0644 to use GX2 graphics, include the buzzer, and support the Super CHIP-8 interpreter.
